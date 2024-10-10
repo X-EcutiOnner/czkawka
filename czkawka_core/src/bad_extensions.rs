@@ -73,10 +73,14 @@ const WORKAROUNDS: &[(&str, &str)] = &[
     // Games specific extensions - cannot be used here common extensions like zip
     ("gz", "h3m"),     // Heroes 3
     ("zip", "hashdb"), // Gog
-    ("zip", "c2"),     // King of the Dark Age
-    ("bmp", "c2"),     // King of the Dark Age
-    ("avi", "c2"),     // King of the Dark Age
-    ("exe", "c2"),     // King of the Dark Age
+    ("c2", "zip"),     // King of the Dark Age
+    ("c2", "bmp"),     // King of the Dark Age
+    ("c2", "avi"),     // King of the Dark Age
+    ("c2", "exe"),     // King of the Dark Age
+    // Raw images
+    ("tif", "nef"),
+    ("tif", "dng"),
+    ("tif", "arw"),
     // Other
     ("der", "keystore"),  // Godot/Android keystore
     ("exe", "pyd"),       // Python/Mingw
@@ -169,7 +173,8 @@ pub struct BadFileEntry {
     pub modified_date: u64,
     pub size: u64,
     pub current_extension: String,
-    pub proper_extensions: String,
+    pub proper_extensions_group: String,
+    pub proper_extension: String,
 }
 
 impl ResultEntry for BadFileEntry {
@@ -263,6 +268,10 @@ impl BadExtensions {
 
     #[fun_time(message = "look_for_bad_extensions_files", level = "debug")]
     fn look_for_bad_extensions_files(&mut self, stop_receiver: Option<&Receiver<()>>, progress_sender: Option<&Sender<ProgressData>>) -> bool {
+        if self.files_to_check.is_empty() {
+            return true;
+        }
+
         let (progress_thread_handle, progress_thread_run, atomic_counter, check_was_stopped) =
             prepare_thread_handler_common(progress_sender, CurrentStage::BadExtensionsChecking, self.files_to_check.len(), self.get_test_type());
 
@@ -341,7 +350,8 @@ impl BadExtensions {
                     modified_date: file_entry.modified_date,
                     size: file_entry.size,
                     current_extension,
-                    proper_extensions: valid_extensions,
+                    proper_extensions_group: valid_extensions,
+                    proper_extension: proper_extension.to_string(),
                 }))
             })
             .while_some()
@@ -382,6 +392,8 @@ impl BadExtensions {
         proper_extension: &str,
     ) -> (BTreeSet<String>, String) {
         let mut all_available_extensions: BTreeSet<String> = Default::default();
+        // TODO Isn't this a bug?
+        // Why to file without extensions we set this as empty
         let valid_extensions = if current_extension.is_empty() {
             String::new()
         } else {
@@ -439,7 +451,7 @@ impl PrintResults for BadExtensions {
         writeln!(writer, "Found {} files with invalid extension.\n", self.information.number_of_files_with_bad_extension)?;
 
         for file_entry in &self.bad_extensions_files {
-            writeln!(writer, "\"{}\" ----- {}", file_entry.path.to_string_lossy(), file_entry.proper_extensions)?;
+            writeln!(writer, "\"{}\" ----- {}", file_entry.path.to_string_lossy(), file_entry.proper_extensions_group)?;
         }
 
         Ok(())

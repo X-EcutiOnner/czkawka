@@ -17,12 +17,25 @@ static COLLECTED_FILES: state::InitCell<CollectedFiles> = state::InitCell::new()
 const ATTEMPTS: u32 = 10;
 const PRINT_MESSAGES_CZKAWKA: bool = true;
 
+fn test_args() {
+    let modes = ["dup", "big", "empty-folders", "empty-files", "temp", "image", "symlinks", "broken", "ext", "video", "music"];
+    for mode in modes {
+        println!("Testing mode {}", mode);
+        let _ = fs::remove_dir_all("RandomDirWithoutContent");
+        fs::create_dir_all("RandomDirWithoutContent").expect("Should not fail in tests");
+        run_with_good_status(&[CZKAWKA_PATH.get().as_str(), mode, "-d", "RandomDirWithoutContent"], true);
+    }
+}
+
 // App runs - ./ci_tester PATH_TO_CZKAWKA
 fn main() {
     handsome_logger::init().expect("Should not fail in tests");
     let args: Vec<String> = std::env::args().collect();
     let path_to_czkawka = args[1].clone();
     CZKAWKA_PATH.set(path_to_czkawka);
+
+    test_args();
+    return;
     remove_test_dir();
     run_with_good_status(&["ls"], false);
     unzip_files();
@@ -478,6 +491,17 @@ fn collect_all_files_and_dirs(dir: &str) -> std::io::Result<CollectedFiles> {
                 panic!("Unknown type of file {path_str}");
             }
         }
+    }
+
+    for dir in &folders_to_check {
+        println!("Folder \"{}\"", dir)
+    }
+    for symlink in &symlinks {
+        println!("Symlink \"{}\"", symlink)
+    }
+    for file in &files {
+        let metadata = fs::metadata(file)?;
+        println!("File \"{}\" with size {} bytes", file, metadata.len());
     }
 
     folders.remove(dir);

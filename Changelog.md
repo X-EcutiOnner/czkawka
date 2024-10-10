@@ -1,5 +1,23 @@
 ## Version 8.0.0 - ?
 
+### Breaking changes
+
+- Due to the removal image_type from image struct, old cache files are incompatible with new version and should be
+  regenerated
+  from scratch(it uses new name)
+- Some CLI arguments could change short name, due fixing ambiguous names
+
+### Known regressions
+
+- Slint 1.8 which Krokiet uses requires femtovg 0.9.2 which broke font
+  rendering - https://github.com/slint-ui/slint/issues/6298
+
+### CI
+
+- Providing nightly
+  builds - [#1360](https://github.com/qarmin/czkawka/pull/1360) - https://github.com/qarmin/czkawka/releases/tag/Nightly
+- Added finding duplicated options in CLI -[#1364](https://github.com/qarmin/czkawka/pull/1364)
+
 ### Core
 
 - Removed some unnecessary panics - [#1354](https://github.com/qarmin/czkawka/pull/1354)
@@ -14,21 +32,46 @@
 - Printing to file/console no longer uses two backslashes in windows
   paths - [#1354](https://github.com/qarmin/czkawka/pull/1354)
 - Fixed panic when failed to decode raw picture - [#1355](https://github.com/qarmin/czkawka/pull/1355)
+- Remove useless saving/loading cache when there is no files to
+  check - [#1358](https://github.com/qarmin/czkawka/pull/1358)
+- Filtering hard links on windows - [#1316](https://github.com/qarmin/czkawka/pull/1316)
+- Added jxl support - [#1358](https://github.com/qarmin/czkawka/pull/1358)
+- Added avif support(via external C library, not enabled by
+  default) - [#1358](https://github.com/qarmin/czkawka/pull/1358)
+- Integer overflow are enabled by default(prepare for reporting bugs, slower performance and
+  general unstability) - [#1358](https://github.com/qarmin/czkawka/pull/1358)
+- Fixed crash when loading invalid image cache - [#1230](https://github.com/qarmin/czkawka/pull/1230)
 
 ### Krokiet
 
 - Fixed invalid default hash size in similar images - [#1354](https://github.com/qarmin/czkawka/pull/1354)
 - Fixed and added more input parameters to the application - [#1354](https://github.com/qarmin/czkawka/pull/1354)
+- Fixed problem with loading invalid preset - [#1226](https://github.com/qarmin/czkawka/pull/1226)
+- Fixed crash when using 8 hash size with small similarity - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Disabling buttons when no files were found - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Changed way to close/open panel at bottom - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Modify logo a little - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Avoid errors when trying to load preview of not supported file - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Added ability to show preview of referenced folders - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Enable selecting with space and jumping over entries with
+  arrows and opening with enter - [#1359](https://github.com/qarmin/czkawka/pull/1359)
+- Added button to rename files with invalid extension -[#1364](https://github.com/qarmin/czkawka/pull/1364)
 
 ### GTK GUI
 
 - Fixed and added more input parameters to the application - [#1355](https://github.com/qarmin/czkawka/pull/1355)
+- Added option to use external libraries instead gtk pixbuf loader for
+  previews - [#1358](https://github.com/qarmin/czkawka/pull/1358)
+- Using static runtime with zstd compression in appimage - [#1350](https://github.com/qarmin/czkawka/pull/1355)
+- [External] Mac homebrew version of app - https://formulae.brew.sh/formula/czkawka
 
 ### CLI
 
+- Added options to find/remove images by size - [#1255](https://github.com/qarmin/czkawka/pull/1255)
 - Fixed and added more input parameters to the application - [#1354](https://github.com/qarmin/czkawka/pull/1354)
-- Fixed crash when stopping scan mutliple times - [#1355](https://github.com/qarmin/czkawka/pull/1355)
+- Fixed crash when stopping scan multiple times - [#1355](https://github.com/qarmin/czkawka/pull/1355)
 - Print results also in debug build - [#1355](https://github.com/qarmin/czkawka/pull/1355)
+- Added support for selecting reference directories -[#1364](https://github.com/qarmin/czkawka/pull/1364)
 
 ## Version 7.0.0 - 19.02.2024r
 
